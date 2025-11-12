@@ -6,7 +6,10 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 3000;
 
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@civixdb.rqfqgav.mongodb.net/?appName=civixDB`;
+app.use(express.json());
+app.use(cors());
+
+const uri = `mongodb+srv://mdsaadmanfuad_db_user:0vzFeCj9xiX1v2QV@civixdb.rqfqgav.mongodb.net/?appName=civixDB`;
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -15,15 +18,11 @@ const client = new MongoClient(uri, {
     }
 });
 
+
+
 app.get('/', (req, res) => {
     res.send('CIVIX Server is running');
 });
-
-
-
-
-
-
 
 async function run() {
     try {
@@ -65,7 +64,7 @@ async function run() {
         });
 
         //contribution related APIs
-        
+
 
         app.get('/contributions', async (req, res) => {
             const cursor = contributionCollection.find();
