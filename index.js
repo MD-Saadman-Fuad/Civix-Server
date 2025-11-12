@@ -64,7 +64,34 @@ async function run() {
             res.send(result);
         });
 
+        //contribution related APIs
         
+
+        app.get('/contributions', async (req, res) => {
+            const cursor = contributionCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get('/contributions/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const contribution = await contributionCollection.findOne(query);
+            res.send(contribution);
+        });
+
+        app.post('/contributions', async (req, res) => {
+            const newContribution = req.body;
+            const result = await contributionCollection.insertOne(newContribution);
+            res.send(result);
+        });
+
+        app.delete('/contributions/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await contributionCollection.deleteOne(query);
+            res.send(result);
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
