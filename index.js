@@ -36,6 +36,34 @@ async function run() {
         const contributionCollection = db.collection('contributions');
         // const usersCollection = db.collection('users');
 
+        //issues related APIs
+
+        app.get('/issues', async (req, res) => {
+            const cursor = issuesCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get('/issues/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const issue = await issuesCollection.findOne(query);
+            res.send(issue);
+        });
+
+        app.post('/issues', async (req, res) => {
+            const newIssue = req.body;
+            const result = await issuesCollection.insertOne(newIssue);
+            res.send(result);
+        });
+
+        app.delete('/issues/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await issuesCollection.deleteOne(query);
+            res.send(result);
+        });
+
         
 
         // Send a ping to confirm a successful connection
