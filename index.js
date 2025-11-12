@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
-const uri = `mongodb+srv://mdsaadmanfuad_db_user:0vzFeCj9xiX1v2QV@civixdb.rqfqgav.mongodb.net/?appName=civixDB`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@civixdb.rqfqgav.mongodb.net/?appName=civixDB`;
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
