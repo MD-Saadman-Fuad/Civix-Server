@@ -33,7 +33,21 @@ async function run() {
         const db = client.db('civixDB');
         const issuesCollection = db.collection('issues');
         const contributionCollection = db.collection('contributions');
-        // const usersCollection = db.collection('users');
+        const usersCollection = db.collection('users');
+
+        //users related APIs
+
+        app.get('/users', async (req, res) => {
+            const cursor = usersCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.post('/users', async (req, res) => {
+            const newUser = req.body;
+            const result = await usersCollection.insertOne(newUser);
+            res.send(result);
+        });
 
         //issues related APIs
 
@@ -49,7 +63,20 @@ async function run() {
         });
 
         app.get('/issues/recent', async (req, res) => {
-            const cursor = issuesCollection.find().limit(6);
+            const cursor = issuesCollection.find().sort({ date: -1 }).limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get('/issues/resolved', async (req, res) => {
+            const query = { status: "ended" };
+            const cursor = issuesCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+        app.get('/issues/pending', async (req, res) => {
+            const query = { status: "ongoing" };
+            const cursor = issuesCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         });
@@ -62,6 +89,26 @@ async function run() {
             const issue = await issuesCollection.findOne(query);
             res.send(issue);
         });
+
+        // return contributions for a given issueId
+        // NOTE: contributions are stored in `contributionCollection`, not `issuesCollection`.
+        app.get('/issues/contributions/:id', async (req, res) => {
+            const issueId = req.params.id;
+            // build a query that matches either a stored string id or an ObjectId
+            let query;
+            if (ObjectId.isValid(issueId)) {
+                query = { $or: [{ issueId: issueId }, { issueId: new ObjectId(issueId) }] };
+            } else {
+                query = { issueId: issueId };
+            }
+            const cursor = contributionCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+
+
+
 
         // app.get('/my-issues/:email', async (req, res) => {
         //     const email = req.params.email;
@@ -111,7 +158,23 @@ async function run() {
 
 
         app.get('/contributions', async (req, res) => {
-            const cursor = contributionCollection.find();
+            const email = req.query.email;
+            const query = {};
+            if (email) {
+                query.email = email;
+            }
+            const cursor = contributionCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+        app.get('/contributions/me/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {};
+            if (email) {
+                query.email = email;
+            }
+            const cursor = contributionCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         });
