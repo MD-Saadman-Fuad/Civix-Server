@@ -168,16 +168,16 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/contributions/me/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = {};
-            if (email) {
-                query.email = email;
-            }
-            const cursor = contributionCollection.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
-        });
+        // app.get('/contributions/me/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = {};
+        //     if (email) {
+        //         query.email = email;
+        //     }
+        //     const cursor = contributionCollection.find(query);
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+        // });
 
         app.get('/contributions/:id', async (req, res) => {
             const id = req.params.id;
