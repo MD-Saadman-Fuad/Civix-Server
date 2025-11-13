@@ -38,10 +38,23 @@ async function run() {
         //issues related APIs
 
         app.get('/issues', async (req, res) => {
-            const cursor = issuesCollection.find();
+            const email = req.query.email;
+            const query = {};
+            if (email) {
+                query.email = email;
+            }
+            const cursor = issuesCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         });
+
+        app.get('/issues/recent', async (req, res) => {
+            const cursor = issuesCollection.find().limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
+
 
         app.get('/issues/:id', async (req, res) => {
             const id = req.params.id;
@@ -50,9 +63,40 @@ async function run() {
             res.send(issue);
         });
 
+        // app.get('/my-issues/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = { email: email };
+        //     const cursor = issuesCollection.find(query);
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+        // });
+
+        // console.log(req.query);
+        //     // Using query parameters to filter products by email
+        //     const email = req.query.email;
+        //     const query = {};
+        //     if (email) {
+        //         query.email = email;
+        //     }
+
+        //     const cursor = productsCollection.find(query);
+        //     // const cursor = productsCollection.find().sort({ price_min: -1 }).skip(2).limit(5).project({ title: 1, price_min: 1 });
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+
         app.post('/issues', async (req, res) => {
             const newIssue = req.body;
             const result = await issuesCollection.insertOne(newIssue);
+            res.send(result);
+        });
+
+        app.put('/issues/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedIssue = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = { $set: updatedIssue };
+            const result = await issuesCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
 
